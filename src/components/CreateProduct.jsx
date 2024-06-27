@@ -1,6 +1,7 @@
-// Import necessary libraries and components
 import React, { useState } from "react";
 import { TextField, Button, Box } from "@mui/material";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 const CreateProduct = () => {
@@ -11,30 +12,26 @@ const CreateProduct = () => {
     category: "פרי",
   });
 
-  // Handle changes in form fields
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.post("http://localhost:3000/products", formData);
+
+      toast.success("Product created successfully! 👍");
+      console.log("ok!");
+    } catch (error) {
+      console.error("Failed to create product:", error);
+      toast.error("Failed to create product. Please try again.");
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
-  };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const action = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:3000/products",
-          formData
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    action();
   };
 
   return (
@@ -56,7 +53,31 @@ const CreateProduct = () => {
           value={formData.name}
           onChange={handleChange}
         />
-        {/* TODO להשלים שדות  */}
+        <TextField
+          id="catalogNumber"
+          name="catalogNumber"
+          label="Catalog Number"
+          variant="outlined"
+          type="number"
+          value={formData.catalogNumber}
+          onChange={handleChange}
+        />
+        <TextField
+          id="description"
+          name="description"
+          label="Description"
+          variant="outlined"
+          value={formData.description}
+          onChange={handleChange}
+        />
+        <TextField
+          id="category"
+          name="category"
+          label="Category"
+          variant="outlined"
+          value={formData.category}
+          onChange={handleChange}
+        />
       </div>
       <Button variant="contained" type="submit" sx={{ mt: 2 }}>
         Submit
