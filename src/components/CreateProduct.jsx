@@ -1,7 +1,15 @@
 import React, { useState } from "react";
-import { TextField, Button, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  CircularProgress,
+  IconButton,
+} from "@mui/material";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import HomeIcon from "@mui/icons-material/Home";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const CreateProduct = () => {
@@ -11,18 +19,37 @@ const CreateProduct = () => {
     description: "",
     category: "פרי",
   });
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.name || !formData.catalogNumber || !formData.description) {
+      toast.error("Please fill in all the required fields.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
       await axios.post("http://localhost:3000/products", formData);
-
       toast.success("Product created successfully! 👍");
-      console.log("ok!");
+      setFormData({
+        name: "",
+        catalogNumber: "",
+        description: "",
+        category: "פרי",
+      });
+      navigate("/");
     } catch (error) {
       console.error("Failed to create product:", error);
-      toast.error("Failed to create product. Please try again.");
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to create product. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,14 +64,26 @@ const CreateProduct = () => {
   return (
     <Box
       component="form"
-      sx={{
-        "& .MuiTextField-root": { m: 1, width: "25ch" },
-      }}
-      noValidate
-      autoComplete="off"
       onSubmit={handleSubmit}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        mt: 2,
+      }}
     >
-      <div>
+      <IconButton component={Link} to="/" sx={{ mb: 2 }}>
+        <HomeIcon />
+      </IconButton>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          alignItems: "center",
+          "& .MuiTextField-root": { m: 1, width: "25ch" },
+        }}
+      >
         <TextField
           id="name"
           name="name"
@@ -52,6 +91,7 @@ const CreateProduct = () => {
           variant="outlined"
           value={formData.name}
           onChange={handleChange}
+          required
         />
         <TextField
           id="catalogNumber"
@@ -61,6 +101,7 @@ const CreateProduct = () => {
           type="number"
           value={formData.catalogNumber}
           onChange={handleChange}
+          required
         />
         <TextField
           id="description"
@@ -69,6 +110,7 @@ const CreateProduct = () => {
           variant="outlined"
           value={formData.description}
           onChange={handleChange}
+          required
         />
         <TextField
           id="category"
@@ -77,11 +119,14 @@ const CreateProduct = () => {
           variant="outlined"
           value={formData.category}
           onChange={handleChange}
+          required
         />
-      </div>
-      <Button variant="contained" type="submit" sx={{ mt: 2 }}>
-        Submit
-      </Button>
+      </Box>
+      <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+        <Button variant="contained" type="submit" disabled={loading}>
+          {loading ? <CircularProgress size={24} /> : "Submit"}
+        </Button>
+      </Box>
     </Box>
   );
 };
