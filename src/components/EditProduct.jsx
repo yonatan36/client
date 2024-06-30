@@ -2,9 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Typography, Box } from "@mui/material";
+import InputFields from "./InputFields";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function EditProduct() {
-  const { productId } = useParams();
+  // id route parmeter from app.jsx
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +17,7 @@ function EditProduct() {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/products/${productId}`
+          `http://localhost:3000/products/${id}`
         );
         setProduct(response.data);
       } catch (error) {
@@ -25,7 +29,7 @@ function EditProduct() {
     };
 
     fetchProduct();
-  }, [productId]);
+  }, [id]);
 
   if (loading) return <Typography variant="h6">Loading...</Typography>;
   if (error)
@@ -36,16 +40,25 @@ function EditProduct() {
     );
   if (!product) return <Typography variant="h6">Product not found.</Typography>;
 
+  const submit = async () => {
+    try {
+      await axios.put(`http://localhost:3000/products/${id}`, product);
+      toast.success("Product edited successfully! 👍");
+      return true;
+    } catch (error) {
+      toast.error(`Product edit failed.\n${error.message}`);
+    }
+  };
+
   return (
-    <Box maxWidth="600px" mx="auto" mt={4}>
-      <Typography variant="h4" gutterBottom>
-        Edit Product
-      </Typography>
-      <Typography variant="h6" gutterBottom>
-        {product.name}
-      </Typography>
-      {/* Render other fields for editing */}
-    </Box>
+    <InputFields
+      submit={submit}
+      formData={product}
+      setFormData={setProduct}
+      loading={loading}
+      setLoading={setLoading}
+      editMode={true}
+    />
   );
 }
 

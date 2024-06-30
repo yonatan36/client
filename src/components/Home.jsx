@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Grid, IconButton, Typography, Box } from "@mui/material";
+import { Grid, IconButton, Typography, Box, Button } from "@mui/material";
 import ProductCard from "./ProductCard";
 import AddIcon from "@mui/icons-material/Add";
 import { Link } from "react-router-dom";
@@ -39,17 +39,16 @@ function Home() {
       minHeight="100vh"
     >
       <Box width="100%" maxWidth="800px">
-        <IconButton
+        <Button
           component={Link}
           to="/create"
-          aria-label="Add Product"
-          edge="start"
-          color="inherit"
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
           style={{ marginTop: 20 }}
         >
-          <AddIcon />
-        </IconButton>
-
+          Add Product
+        </Button>
         {loading ? (
           <Typography variant="h6" align="center" style={{ marginTop: 20 }}>
             Loading...
