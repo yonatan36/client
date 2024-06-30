@@ -120,10 +120,19 @@ function InputFields({
           name="category"
           label="Category"
           variant="outlined"
+          select
           value={formData.category}
           onChange={handleChange}
           required
-        />
+          SelectProps={{
+            native: true,
+          }}
+        >
+          <option value="ירק">ירק</option>
+          <option value="פרי">פרי</option>
+          <option value="גידול שדה">גידול שדה</option>
+        </TextField>
+
         <TextField
           id="dateSold"
           name="dateSold"
